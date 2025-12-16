@@ -1,0 +1,78 @@
+spring:
+  application:
+    name: backend
+  profiles:
+    active: dev
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: info
+    org.springframework.kafka: info
+
+---
+# Dev profile: in-memory H2 to allow bootstrapping without DM8
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:greenmesh;MODE=MySQL;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: false
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  sql:
+    init:
+      mode: never
+  flyway:
+    enabled: false
+
+---
+# DM8 profile: real database, requires DM JDBC driver on classpath
+spring:
+  config:
+    activate:
+      on-profile: dm8
+  datasource:
+    url: jdbc:dm://${DM8_HOST:localhost}:${DM8_PORT:5236}/${DM8_DB:GMESH}
+    username: ${DM8_USER:SYSDBA}
+    password: ${DM8_PASSWORD:dm8pass}
+    driver-class-name: dm.jdbc.driver.DmDriver
+    hikari:
+      maximum-pool-size: 8
+      minimum-idle: 2
+      connection-timeout: 20000
+      validation-timeout: 5000
+      initialization-fail-timeout: 0
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:kafka:9092}
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+    jdbc:
+      repositories:
+        enabled: false
+  flyway:
+    enabled: false # Flyway不内置支持DM，关闭自动迁移，待使用达梦方言插件或手工脚本后再开启

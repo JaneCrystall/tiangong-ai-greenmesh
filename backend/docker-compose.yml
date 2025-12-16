@@ -1,0 +1,121 @@
+services:
+  dm8:
+    image: cnxc/dm8:20250423-kylin
+    container_name: dm8
+    environment:
+      - LD_LIBRARY_PATH=/opt/dmdbms/bin
+      - INSTANCE_NAME=DM8
+      - SYSDBA_PWD=${DM8_SYSDBA_PWD:-ChangeMeDm8!}
+    ports:
+      - "5236:5236" # TCP
+      - "5237:5237" # ODBC
+    volumes:
+      - dm8-data:/opt/dmdbms/data
+    restart: unless-stopped
+    networks:
+      - greenmesh
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.3
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    volumes:
+      - zookeeper-data:/var/lib/zookeeper/data
+      - zookeeper-log:/var/lib/zookeeper/log
+    restart: unless-stopped
+    networks:
+      - greenmesh
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+    restart: unless-stopped
+    networks:
+      - greenmesh
+
+  redis:
+    image: redis:7-alpine
+    command: redis-server --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    networks:
+      - greenmesh
+
+  jobmanager:
+    image: flink:1.19-scala_2.12
+    hostname: jobmanager
+    command: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+    volumes:
+      - flink-data:/opt/flink/data
+    restart: unless-stopped
+    networks:
+      - greenmesh
+
+  taskmanager:
+    image: flink:1.19-scala_2.12
+    hostname: taskmanager
+    command: taskmanager
+    depends_on:
+      - jobmanager
+    environment:
+      - JOB_MANAGER_RPC_ADDRESS=jobmanager
+      - TASK_MANAGER_NUMBER_OF_TASK_SLOTS=2
+    volumes:
+      - flink-data:/opt/flink/data
+    restart: unless-stopped
+    networks:
+      - greenmesh
+
+  grafana:
+    image: grafana/grafana:11.2.2
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER:-admin}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD:-ChangeMeGrafana!}
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - kafka
+      - redis
+    restart: unless-stopped
+    networks:
+      - greenmesh
+
+volumes:
+  dm8-data:
+  kafka-data:
+  zookeeper-data:
+  zookeeper-log:
+  redis-data:
+  flink-data:
+  grafana-data:
+
+networks:
+  greenmesh:
+    driver: bridge

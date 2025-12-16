@@ -5,6 +5,7 @@
 - 目标：零碳园区 / 绿电直连 / 新能源调度的规则优先、可解释、可追溯的平台。前端 Vite+React+MUI，后端 Java 21 + Spring Boot 3，数据库达梦 DM8（联调栈含 Kafka/Redis/Flink/Grafana）。
 - 目录：`frontend/`（Vite React）、`backend/`（Spring Boot）、`docker-compose.yml`（在 backend 下）、`jdbc/`（驱动与方言包，勿入库）、根目录 `.env`（本地口令，已 gitignore）。
 - 运行：前端 `npm run dev`；后端 dev(H2) `./gradlew bootRun`；后端 DM8 `SPRING_PROFILES_ACTIVE=dm8 ... ./gradlew bootRun`；联调栈 `cd backend && docker compose up -d ...`。
+- 登录（开发占位）：后端 `/api/auth/login` 简易校验账号 `admin/admin123` 返回 token；前端提供 `/login` 页面并用保护路由，未登录会跳转登录。上线前必须替换为真实认证/鉴权。
 
 安全与敏感信息
 - `.env`（根目录）含口令占位，已被忽略；切勿提交真实密码/令牌。
@@ -24,6 +25,9 @@
 - 依赖：web/validation/actuator、data-redis、spring-kafka、H2(dev)、DM8 JDBC(外部)。
 - 探活接口：`GET /api/status`。
 - `application.yml`：profiles `dev`(H2) / `dm8`(达梦)；Flyway disabled in dm8；Redis/Kafka 通过 env 覆盖。
+- CORS：`app.cors.allowed-origins` 支持配置（默认 http://localhost:5173）。
+- 认证占位：`/api/auth/login` 返回 token，未来需接入 IAM/OIDC，并替换硬编码账号。
+- 快速联调脚本：`run-dev.sh`（根目录），从 `.env` 读取口令，启动 docker compose（dm8/kafka/redis/flink/grafana），并并行启动后端 dm8 profile 与前端 dev（VITE_API_BASE 默认 http://localhost:8080）。修改 `.env` 后再运行。
 
 CI/CD 与环境
 - 当前未配置 CI。若添加，请确保 `.env`、`libs/`、任何密钥均不入库，并用 Secret 管理。

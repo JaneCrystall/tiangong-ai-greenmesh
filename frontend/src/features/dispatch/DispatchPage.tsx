@@ -3,7 +3,6 @@ import PlayArrowRoundedIcon from '@mui/icons-material/PlayArrowRounded'
 import SecurityRoundedIcon from '@mui/icons-material/SecurityRounded'
 import {
   Chip,
-  Grid,
   Paper,
   Stack,
   Table,
@@ -13,6 +12,7 @@ import {
   TableRow,
   Typography,
 } from '@mui/material'
+import Grid from '@mui/material/GridLegacy'
 import { useQuery } from '@tanstack/react-query'
 import { fetchDispatchGuardrails, fetchDispatchQueue } from '../../api/mockClient'
 

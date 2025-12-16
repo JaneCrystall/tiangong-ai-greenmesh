@@ -5,7 +5,6 @@ import TimelineRoundedIcon from '@mui/icons-material/TimelineRounded'
 import {
   Chip,
   Divider,
-  Grid,
   List,
   ListItem,
   ListItemAvatar,
@@ -14,6 +13,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material'
+import Grid from '@mui/material/GridLegacy'
 import type { EChartsOption } from 'echarts'
 import ReactECharts from 'echarts-for-react'
 import { useMemo } from 'react'
@@ -22,8 +22,8 @@ import {
   fetchAuditEvents,
   fetchOverviewMetrics,
   fetchOverviewTimeline,
-  OverviewMetric,
 } from '../../api/mockClient'
+import type { OverviewMetric } from '../../api/mockClient'
 import StatusCard from '../../components/StatusCard'
 
 function OverviewPage() {

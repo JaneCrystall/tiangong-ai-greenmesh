@@ -1,12 +1,12 @@
-import EcoRoundedIcon from '@mui/icons-material/EcoRounded'
+import EnergySavingsLeafRoundedIcon from '@mui/icons-material/EnergySavingsLeafRounded'
 import TrendingDownRoundedIcon from '@mui/icons-material/TrendingDownRounded'
 import {
   Chip,
-  Grid,
   Paper,
   Stack,
   Typography,
 } from '@mui/material'
+import Grid from '@mui/material/GridLegacy'
 import type { EChartsOption } from 'echarts'
 import ReactECharts from 'echarts-for-react'
 import { useMemo } from 'react'
@@ -65,7 +65,7 @@ function CarbonPage() {
               }}
             >
               <Stack direction="row" alignItems="center" spacing={1} mb={1}>
-                <EcoRoundedIcon color="primary" />
+                <EnergySavingsLeafRoundedIcon color="primary" />
                 <Typography variant="subtitle1">{item.boundary}</Typography>
               </Stack>
               <Stack spacing={0.5}>

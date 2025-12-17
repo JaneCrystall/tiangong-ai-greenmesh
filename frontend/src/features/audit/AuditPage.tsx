@@ -30,7 +30,7 @@ function AuditPage() {
     <Stack spacing={2}>
       <Paper
         elevation={0}
-        sx={{ border: '1px solid', borderColor: 'divider', p: 2 }}
+        sx={{ border: '1px solid', borderColor: 'divider', p: { xs: 2, md: 3 } }}
       >
         <Stack direction="row" spacing={1} alignItems="center" mb={1}>
           <HistoryRoundedIcon color="primary" />
@@ -73,7 +73,7 @@ function AuditPage() {
         sx={{
           border: '1px solid',
           borderColor: 'divider',
-          p: 2,
+          p: { xs: 2, md: 3 },
           display: 'flex',
           gap: 1,
           flexWrap: 'wrap',
@@ -90,7 +90,7 @@ function AuditPage() {
 
       <Paper
         elevation={0}
-        sx={{ border: '1px solid', borderColor: 'divider', p: 2 }}
+        sx={{ border: '1px solid', borderColor: 'divider', p: { xs: 2, md: 3 } }}
       >
         <Stack direction="row" spacing={1} alignItems="center" mb={1}>
           <AssignmentTurnedInRoundedIcon color="primary" />

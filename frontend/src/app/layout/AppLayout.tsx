@@ -5,9 +5,11 @@ import ShieldOutlinedIcon from '@mui/icons-material/ShieldOutlined'
 import StorageOutlinedIcon from '@mui/icons-material/StorageOutlined'
 import {
   AppBar,
+  Avatar,
   Box,
   Chip,
   Container,
+  IconButton,
   Paper,
   Stack,
   Tab,
@@ -15,7 +17,9 @@ import {
   Toolbar,
   Tooltip,
   Typography,
+  useMediaQuery,
 } from '@mui/material'
+import Grid from '@mui/material/Grid'
 import { useTheme } from '@mui/material/styles'
 import { useContext } from 'react'
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
@@ -29,19 +33,23 @@ const navItems = [
 ]
 
 const resolveActivePath = (pathname: string) => {
-  if (pathname === '/') {
-    return '/'
+  const sortedNav = [...navItems].sort((a, b) => b.path.length - a.path.length)
+
+  for (const item of sortedNav) {
+    if (pathname === item.path || pathname.startsWith(`${item.path}/`)) {
+      return item.path
+    }
   }
 
-  const match = navItems.find((item) => pathname.startsWith(item.path))
-  return match?.path ?? '/'
+  return '/'
 }
 
 function AppLayout() {
   const location = useLocation()
   const navigate = useNavigate()
-  const activePath = resolveActivePath(location.pathname)
   const theme = useTheme()
+  const isMdDown = useMediaQuery(theme.breakpoints.down('md'))
+  const activePath = resolveActivePath(location.pathname)
   const { toggleMode } = useContext(ColorModeContext)
   const isDark = theme.palette.mode === 'dark'
 
@@ -51,112 +59,145 @@ function AppLayout() {
         position="sticky"
         color="transparent"
         elevation={0}
-        sx={{ borderBottom: 1, borderColor: 'divider' }}
+        sx={{ borderBottom: 1, borderColor: 'divider', backdropFilter: 'blur(10px)' }}
       >
-        <Toolbar sx={{ gap: 2, minHeight: 72 }}>
-          <Stack direction="row" spacing={1.5} alignItems="center" sx={{ minWidth: 200 }}>
-            <Box
-              sx={{
-                width: 36,
-                height: 36,
-                borderRadius: 1.5,
-                bgcolor: 'primary.main',
-                color: 'primary.contrastText',
-                display: 'grid',
-                placeItems: 'center',
-                fontWeight: 700,
-                letterSpacing: -0.5,
-              }}
-            >
-              GM
-            </Box>
-            <Box>
-              <Typography variant="subtitle2" sx={{ letterSpacing: 0.3 }}>
-                GreenMesh
-              </Typography>
-              <Typography variant="caption" color="text.secondary">
-                零碳园区 · 源-网-荷-储-充
-              </Typography>
-            </Box>
-          </Stack>
-          <Tabs
-            value={activePath}
-            onChange={(_, value) => navigate(value)}
-            textColor="primary"
-            indicatorColor="primary"
-            sx={{ ml: 2, minHeight: 64, flex: 1 }}
-          >
-            {navItems.map((item) => (
-              <Tab
-                key={item.path}
-                label={item.label}
-                value={item.path}
-                sx={{ textTransform: 'none', fontWeight: 600 }}
-              />
-            ))}
-          </Tabs>
-          <Stack direction="row" spacing={1}>
-            <Chip label="规则兜底" color="success" variant="outlined" size="small" />
-            <Chip label="可追溯" color="primary" variant="outlined" size="small" />
-            <Chip label="DM8" icon={<StorageOutlinedIcon />} size="small" />
-            <Tooltip title={isDark ? '切换到明亮模式' : '切换到深色模式'}>
-              <Box>
-                <Chip
-                  icon={isDark ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
-                  label={isDark ? 'Light' : 'Dark'}
-                  variant="outlined"
-                  onClick={toggleMode}
-                  clickable
-                  size="small"
-                />
-              </Box>
-            </Tooltip>
-          </Stack>
-        </Toolbar>
-      </AppBar>
-
-      <Box sx={{ py: 3 }}>
         <Container maxWidth="xl">
-          <Paper
-            elevation={0}
+          <Toolbar
+            disableGutters
             sx={{
-              p: 2.5,
-              mb: 3,
-              border: '1px solid',
-              borderColor: 'divider',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
               gap: 2,
+              minHeight: { xs: 64, md: 72 },
+              py: { xs: 1, md: 1.5 },
+              flexWrap: 'wrap',
             }}
           >
-            <Stack spacing={0.5}>
-              <Stack direction="row" alignItems="center" spacing={1}>
-                <BoltRoundedIcon color="primary" />
-                <Typography variant="h5">实时态势 + 可控调度</Typography>
-              </Stack>
-              <Typography variant="body2" color="text.secondary">
-                秒级采集，规则优先，调度可回退；碳口径一致且可复盘。
-              </Typography>
-              <Stack direction="row" spacing={1}>
-                <Chip label="源-网-荷-储-充覆盖" size="small" variant="outlined" />
-                <Chip label="多园区/多站点" size="small" variant="outlined" />
-              </Stack>
+            <Stack direction="row" spacing={1.25} alignItems="center" sx={{ minWidth: 0 }}>
+              <Avatar
+                variant="rounded"
+                sx={{
+                  width: 40,
+                  height: 40,
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                  fontWeight: 700,
+                  letterSpacing: -0.5,
+                }}
+              >
+                GM
+              </Avatar>
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="subtitle2" noWrap>
+                  GreenMesh
+                </Typography>
+                <Typography variant="caption" color="text.secondary" noWrap>
+                  零碳园区 · 源-网-荷-储-充
+                </Typography>
+              </Box>
             </Stack>
-            <Stack direction="row" spacing={1}>
-              <Chip label="在线园区 3" color="primary" variant="filled" />
-              <Chip label="设备正常 98.4%" color="success" variant="outlined" />
-              <Chip
-                icon={<ShieldOutlinedIcon />}
-                label="策略版本 v2025.01"
-                variant="outlined"
-              />
-            </Stack>
-          </Paper>
 
-          <Outlet />
+            <Tabs
+              value={activePath}
+              onChange={(_, value) => navigate(value)}
+              textColor="primary"
+              indicatorColor="primary"
+              variant={isMdDown ? 'scrollable' : 'standard'}
+              allowScrollButtonsMobile
+              scrollButtons={isMdDown ? 'auto' : false}
+              sx={{
+                minHeight: 48,
+                flex: 1,
+                minWidth: 0,
+                order: { xs: 3, md: 2 },
+                width: { xs: '100%', md: 'auto' },
+              }}
+            >
+              {navItems.map((item) => (
+                <Tab
+                  key={item.path}
+                  label={item.label}
+                  value={item.path}
+                  sx={{ textTransform: 'none', fontWeight: 600, minHeight: 48 }}
+                />
+              ))}
+            </Tabs>
+
+            <Stack
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              justifyContent="flex-end"
+              flexWrap="wrap"
+              rowGap={1}
+              sx={{
+                minWidth: { xs: '100%', md: 'auto' },
+                order: { xs: 2, md: 3 },
+              }}
+            >
+              <Chip label="规则兜底" color="success" variant="outlined" size="small" />
+              <Chip label="可追溯" color="primary" variant="outlined" size="small" />
+              <Chip label="DM8" icon={<StorageOutlinedIcon />} size="small" />
+              <Tooltip title={isDark ? '切换到明亮模式' : '切换到深色模式'}>
+                <IconButton size="small" color="inherit" onClick={toggleMode} aria-label="切换主题">
+                  {isDark ? <LightModeOutlinedIcon /> : <DarkModeOutlinedIcon />}
+                </IconButton>
+              </Tooltip>
+            </Stack>
+          </Toolbar>
         </Container>
-      </Box>
+      </AppBar>
+
+      <Container maxWidth="xl" component="main" sx={{ py: { xs: 2, md: 3 } }}>
+        <Grid container spacing={2} alignItems="stretch" sx={{ mb: 2 }}>
+          <Grid size={{ xs: 12, lg: 8 }}>
+            <Paper
+              elevation={0}
+              sx={{ border: '1px solid', borderColor: 'divider', p: { xs: 2, md: 3 }, height: '100%' }}
+            >
+              <Stack spacing={1.5}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <BoltRoundedIcon color="primary" />
+                  <Typography variant="h5">实时态势 + 可控调度</Typography>
+                </Stack>
+                <Typography variant="body2" color="text.secondary">
+                  秒级采集，规则优先，调度可回退；碳口径一致且可复盘。
+                </Typography>
+                <Stack
+                  direction={{ xs: 'column', sm: 'row' }}
+                  spacing={1}
+                  useFlexGap
+                  flexWrap="wrap"
+                >
+                  <Chip label="源-网-荷-储-充覆盖" size="small" variant="outlined" />
+                  <Chip label="多园区/多站点" size="small" variant="outlined" />
+                  <Chip label="调度回退令牌" size="small" variant="outlined" />
+                  <Chip label="碳口径一致" size="small" variant="outlined" />
+                </Stack>
+              </Stack>
+            </Paper>
+          </Grid>
+          <Grid size={{ xs: 12, lg: 4 }}>
+            <Paper
+              elevation={0}
+              sx={{ border: '1px solid', borderColor: 'divider', p: { xs: 2, md: 3 }, height: '100%' }}
+            >
+              <Stack spacing={1.5}>
+                <Stack direction="row" alignItems="center" spacing={1}>
+                  <ShieldOutlinedIcon color="primary" />
+                  <Typography variant="subtitle1">运行概览</Typography>
+                </Stack>
+                <Stack spacing={1}>
+                  <Chip label="在线园区 3" color="primary" />
+                  <Chip label="设备正常 98.4%" color="success" variant="outlined" />
+                  <Chip icon={<StorageOutlinedIcon />} label="DM8 联调" variant="outlined" />
+                  <Chip icon={<ShieldOutlinedIcon />} label="策略版本 v2025.01" variant="outlined" />
+                </Stack>
+              </Stack>
+            </Paper>
+          </Grid>
+        </Grid>
+
+        <Outlet />
+      </Container>
     </Box>
   )
 }

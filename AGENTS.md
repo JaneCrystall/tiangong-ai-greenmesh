@@ -20,7 +20,7 @@
 
 前端要点
 - 技术栈：Vite 7、React 19、TypeScript、MUI、TanStack Query、React Router、MUI X Charts。`src/api/mockClient.ts` 为示例数据，真实接口接入后替换。
-- 命令：`npm run dev` / `build` / `lint` / `test` / `format`。
+- 命令：`npm run dev` / `build` / `lint`（含 eslint + tsc --noEmit 类型检查） / `test` / `format`。
 - 测试：React Testing Library + Vitest，示例 `src/features/auth/LoginPage.test.tsx`。
 
 后端要点

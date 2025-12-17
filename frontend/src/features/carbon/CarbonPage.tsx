@@ -1,7 +1,7 @@
 import EnergySavingsLeafRoundedIcon from '@mui/icons-material/EnergySavingsLeafRounded'
 import TrendingDownRoundedIcon from '@mui/icons-material/TrendingDownRounded'
 import { Chip, Paper, Stack, Typography } from '@mui/material'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import { useQuery } from '@tanstack/react-query'
 import { LineChart } from '@mui/x-charts/LineChart'
 import { useTheme } from '@mui/material/styles'
@@ -22,13 +22,13 @@ function CarbonPage() {
     <Stack spacing={2}>
       <Grid container spacing={2}>
         {summaries.map((item) => (
-          <Grid item xs={12} md={4} key={item.id}>
+          <Grid key={item.id} size={{ xs: 12, md: 4 }}>
             <Paper
               elevation={0}
               sx={{
                 border: '1px solid',
                 borderColor: 'divider',
-                p: 2,
+                p: { xs: 2, md: 3 },
                 height: '100%',
               }}
             >
@@ -60,7 +60,7 @@ function CarbonPage() {
         sx={{
           border: '1px solid',
           borderColor: 'divider',
-          p: 2,
+          p: { xs: 2, md: 3 },
         }}
       >
         <Stack direction="row" spacing={1} alignItems="center" mb={1}>
@@ -87,7 +87,7 @@ function CarbonPage() {
             },
           ]}
           slotProps={{
-            legend: { position: { vertical: 'top', horizontal: 'left' } },
+            legend: { position: { vertical: 'top', horizontal: 'start' } },
           }}
           margin={{ top: 32, right: 24, left: 56, bottom: 32 }}
         />
@@ -98,7 +98,7 @@ function CarbonPage() {
         sx={{
           border: '1px solid',
           borderColor: 'divider',
-          p: 2,
+          p: { xs: 2, md: 3 },
           display: 'flex',
           gap: 1,
           alignItems: 'center',

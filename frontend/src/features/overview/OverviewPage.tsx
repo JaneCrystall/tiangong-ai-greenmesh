@@ -12,8 +12,9 @@ import {
   Paper,
   Stack,
   Typography,
+  useMediaQuery,
 } from '@mui/material'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import { useQuery } from '@tanstack/react-query'
 import { LineChart } from '@mui/x-charts/LineChart'
 import { useTheme } from '@mui/material/styles'
@@ -26,6 +27,8 @@ import type { OverviewMetric } from '../../api/mockClient'
 import StatusCard from '../../components/StatusCard'
 
 function OverviewPage() {
+  const theme = useTheme()
+  const isSmDown = useMediaQuery(theme.breakpoints.down('sm'))
   const { data: metrics = [] } = useQuery<OverviewMetric[]>({
     queryKey: ['overview', 'metrics'],
     queryFn: fetchOverviewMetrics,
@@ -38,13 +41,12 @@ function OverviewPage() {
     queryKey: ['overview', 'events'],
     queryFn: fetchAuditEvents,
   })
-  const theme = useTheme()
 
   return (
     <Stack spacing={2}>
-      <Grid container spacing={2}>
+      <Grid container spacing={2} alignItems="stretch">
         {metrics.map((metric) => (
-          <Grid item xs={12} sm={6} md={3} key={metric.id}>
+          <Grid key={metric.id} size={{ xs: 12, sm: 6, md: 3 }}>
             <StatusCard
               title={metric.title}
               value={metric.value}
@@ -57,16 +59,16 @@ function OverviewPage() {
       </Grid>
 
       <Grid container spacing={2}>
-        <Grid item xs={12} md={8}>
+        <Grid size={{ xs: 12, md: 8 }}>
           <Paper
             elevation={0}
-            sx={{ border: '1px solid', borderColor: 'divider', p: 2, height: '100%' }}
+            sx={{ border: '1px solid', borderColor: 'divider', p: { xs: 2, md: 3 }, height: '100%' }}
           >
-            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
               <TimelineRoundedIcon color="primary" />
               <Typography variant="h6">源-网-荷-储-充趋势</Typography>
             </Stack>
-            <Typography variant="body2" color="text.secondary" mb={2}>
+            <Typography variant="body2" color="text.secondary" mb={2.5}>
               秒级采集，数据口径统一；功率、SoC、碳强度同轴展示便于对齐调度与核算。
             </Typography>
             <LineChart
@@ -83,7 +85,7 @@ function OverviewPage() {
                   id: 'power',
                   label: '功率 (MW)',
                   dataKey: 'powerMw',
-                  yAxisKey: 'power',
+                  yAxisId: 'power',
                   area: true,
                   color: theme.palette.success.main,
                   curve: 'monotoneX',
@@ -93,7 +95,7 @@ function OverviewPage() {
                   id: 'soc',
                   label: 'SoC (%)',
                   dataKey: 'soc',
-                  yAxisKey: 'soc',
+                  yAxisId: 'soc',
                   color: theme.palette.primary.main,
                   curve: 'monotoneX',
                   showMark: false,
@@ -102,30 +104,30 @@ function OverviewPage() {
                   id: 'carbon',
                   label: '碳强度',
                   dataKey: 'carbonIntensity',
-                  yAxisKey: 'carbon',
+                  yAxisId: 'carbon',
                   color: theme.palette.warning.main,
                   curve: 'monotoneX',
                   showMark: false,
                 },
               ]}
               slotProps={{
-                legend: { direction: 'row', position: { vertical: 'top', horizontal: 'left' } },
+                legend: { direction: 'horizontal', position: { vertical: 'top', horizontal: 'start' } },
               }}
-              margin={{ top: 40, right: 72, left: 56, bottom: 32 }}
+              margin={{ top: 32, right: isSmDown ? 48 : 72, left: 56, bottom: 32 }}
             />
           </Paper>
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid size={{ xs: 12, md: 4 }}>
           <Paper
             elevation={0}
-            sx={{ border: '1px solid', borderColor: 'divider', p: 2, height: '100%' }}
+            sx={{ border: '1px solid', borderColor: 'divider', p: { xs: 2, md: 3 }, height: '100%' }}
           >
-            <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+            <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
               <LanRoundedIcon color="primary" />
               <Typography variant="h6">最新事件/审计</Typography>
             </Stack>
-            <Typography variant="body2" color="text.secondary" mb={1}>
+            <Typography variant="body2" color="text.secondary" mb={1.5}>
               调度令牌、通道状态与审批事件均留痕，可用于回放与追责。
             </Typography>
             <Divider sx={{ mb: 1 }} />

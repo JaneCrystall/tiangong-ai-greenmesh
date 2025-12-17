@@ -8,11 +8,12 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableContainer,
   TableHead,
   TableRow,
   Typography,
 } from '@mui/material'
-import Grid from '@mui/material/GridLegacy'
+import Grid from '@mui/material/Grid'
 import { useQuery } from '@tanstack/react-query'
 import { fetchDispatchGuardrails, fetchDispatchQueue } from '../../api/mockClient'
 
@@ -52,70 +53,69 @@ function DispatchPage() {
 
   return (
     <Stack spacing={2}>
-      <Paper
-        elevation={0}
-        sx={{ border: '1px solid', borderColor: 'divider', p: 2 }}
-      >
-        <Stack direction="row" spacing={1} alignItems="center" mb={1}>
+      <Paper elevation={0} sx={{ border: '1px solid', borderColor: 'divider', p: { xs: 2, md: 3 } }}>
+        <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
           <PlayArrowRoundedIcon color="primary" />
           <Typography variant="h6">调度队列</Typography>
         </Stack>
         <Typography variant="body2" color="text.secondary" mb={2}>
           调度链路遵循规则优先；支持互斥排队、速率限制与回退令牌。
         </Typography>
-        <Table size="small">
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>范围</TableCell>
-              <TableCell>动作</TableCell>
-              <TableCell>开始</TableCell>
-              <TableCell align="right">状态</TableCell>
-              <TableCell align="right">风险</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {queue.map((item) => (
-              <TableRow key={item.id} hover>
-                <TableCell>{item.id}</TableCell>
-                <TableCell>
-                  <Stack spacing={0.5}>
-                    <Typography variant="subtitle2">{item.scope}</Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {item.target}
-                    </Typography>
-                  </Stack>
-                </TableCell>
-                <TableCell>
-                  <Typography variant="body2">{item.action}</Typography>
-                </TableCell>
-                <TableCell>{item.start}</TableCell>
-                <TableCell align="right">
-                  <Chip
-                    size="small"
-                    color={statusColor(item.status)}
-                    label={item.status === 'running' ? '执行中' : item.status === 'pending' ? '排队' : '完成'}
-                    variant="outlined"
-                  />
-                </TableCell>
-                <TableCell align="right">
-                  <Chip size="small" color={riskColor(item.risk)} label={`风险 ${item.risk}`} />
-                </TableCell>
+        <TableContainer sx={{ maxHeight: 420 }}>
+          <Table size="small" stickyHeader>
+            <TableHead>
+              <TableRow>
+                <TableCell>ID</TableCell>
+                <TableCell>范围</TableCell>
+                <TableCell>动作</TableCell>
+                <TableCell>开始</TableCell>
+                <TableCell align="right">状态</TableCell>
+                <TableCell align="right">风险</TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHead>
+            <TableBody>
+              {queue.map((item) => (
+                <TableRow key={item.id} hover>
+                  <TableCell>{item.id}</TableCell>
+                  <TableCell>
+                    <Stack spacing={0.5}>
+                      <Typography variant="subtitle2">{item.scope}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {item.target}
+                      </Typography>
+                    </Stack>
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2">{item.action}</Typography>
+                  </TableCell>
+                  <TableCell>{item.start}</TableCell>
+                  <TableCell align="right">
+                    <Chip
+                      size="small"
+                      color={statusColor(item.status)}
+                      label={item.status === 'running' ? '执行中' : item.status === 'pending' ? '排队' : '完成'}
+                      variant="outlined"
+                    />
+                  </TableCell>
+                  <TableCell align="right">
+                    <Chip size="small" color={riskColor(item.risk)} label={`风险 ${item.risk}`} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Paper>
 
       <Grid container spacing={2}>
         {guardrails.map((item) => (
-          <Grid item xs={12} md={6} key={item.id}>
+          <Grid key={item.id} size={{ xs: 12, md: 6 }}>
             <Paper
               elevation={0}
               sx={{
                 border: '1px solid',
                 borderColor: 'divider',
-                p: 2,
+                p: { xs: 2, md: 3 },
                 height: '100%',
               }}
             >
@@ -141,7 +141,7 @@ function DispatchPage() {
         sx={{
           border: '1px solid',
           borderColor: 'divider',
-          p: 2,
+          p: { xs: 2, md: 3 },
           display: 'flex',
           alignItems: 'center',
           gap: 1.5,
